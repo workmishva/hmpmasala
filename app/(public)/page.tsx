@@ -2,32 +2,18 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { connection } from 'next/server'
-import { Leaf, FlameKindling, ShieldCheck, ChevronRight, ShoppingCart } from 'lucide-react'
+import { ChevronRight, ShoppingCart } from 'lucide-react'
 import { connectDB } from '@/lib/db'
 import Product from '@/models/Product'
 import { HeroContent } from '@/components/home/HeroContent'
 import { CategoryStrip } from '@/components/home/CategoryStrip'
+import Features from '@/components/layout/Features'
+import AboutSection from '@/components/AboutSection'
 import { ProductGridSkeleton } from '@/components/ui/Skeleton'
-import { getSettings } from '@/lib/getSettings'
+import { getSettings } from '@/lib/settings'
 import type { IProduct } from '@/types'
 
-const WHY_CARDS = [
-  {
-    Icon: Leaf,
-    title: '100% Natural',
-    desc:  'No artificial colours, preservatives, or additives. Pure spices — nothing else.',
-  },
-  {
-    Icon: FlameKindling,
-    title: 'Family Recipe',
-    desc:  'Every blend follows a recipe passed down through generations in our family kitchen.',
-  },
-  {
-    Icon: ShieldCheck,
-    title: 'Fresh Ground Daily',
-    desc:  'We grind our spices fresh in small batches to lock in maximum flavour and aroma.',
-  },
-]
+
 
 const BESTSELLERS_MIN = 3
 
@@ -44,13 +30,13 @@ async function getFeaturedProducts(): Promise<IProduct[]> {
     }
 
     // Fill remaining slots — prefer products from categories not already represented
-    const usedIds   = featured.map((p) => p._id)
-    const usedCats  = [...new Set(featured.map((p) => p.category))]
-    const needed    = BESTSELLERS_MIN - featured.length
+    const usedIds = featured.map((p) => p._id)
+    const usedCats = [...new Set(featured.map((p) => p.category))]
+    const needed = BESTSELLERS_MIN - featured.length
 
     const fromOther = await Product.find({
-      isActive:  true,
-      _id:       { $nin: usedIds },
+      isActive: true,
+      _id: { $nin: usedIds },
       ...(usedCats.length ? { category: { $nin: usedCats } } : {}),
     })
       .sort({ createdAt: -1 })
@@ -152,11 +138,10 @@ function ProductCard({ product }: { product: IProduct }) {
         </div>
 
         <div className="pt-1">
-          <span className={`block w-full text-center py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-colors duration-200 ${
-            product.stock === 0
-              ? 'bg-masala-100 text-masala-400 cursor-not-allowed'
-              : 'bg-masala-100 text-masala-700 group-hover:bg-chili-600 group-hover:text-white'
-          }`}>
+          <span className={`w-full text-center py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-colors duration-200 ${product.stock === 0
+            ? 'bg-masala-100 text-masala-400 cursor-not-allowed'
+            : 'bg-masala-100 text-masala-700 group-hover:bg-chili-600 group-hover:text-white'
+            }`}>
             <ShoppingCart size={14} />
             {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
           </span>
@@ -193,7 +178,7 @@ async function FeaturedGrid() {
 }
 
 export default async function HomePage() {
-  const settings    = await getSettings()
+  const settings = await getSettings()
   const whatsappUrl = `https://wa.me/${settings.whatsappNumber || process.env.WHATSAPP_NUMBER || ''}`
 
   return (
@@ -203,7 +188,7 @@ export default async function HomePage() {
            -mt-16 pulls the section up behind the sticky navbar (64px tall)
            so the navbar glass floats directly over the dark hero image.
            pt-16 inside ensures hero content is not hidden under the navbar. */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#3a211a] -mt-16 pt-16">
+      <section id="hero-section" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#3a211a] -mt-16 pt-16">
         <HeroContent whatsappUrl={whatsappUrl} />
       </section>
 
@@ -236,34 +221,14 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Why HMP Masala ── */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <p className="text-saffron-600 text-sm font-semibold uppercase tracking-wider mb-2">
-              Why Choose Us
-            </p>
-            <h2 className="font-heading text-3xl md:text-4xl font-bold text-masala-900">
-              The HMP Masala Difference
-            </h2>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {WHY_CARDS.map(({ Icon, title, desc }) => (
-              <div
-                key={title}
-                className="group text-center p-8 rounded-3xl bg-white border border-masala-200 hover:border-chili-600/30 hover:shadow-md transition-all duration-200"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-chili-100 group-hover:bg-chili-100 flex items-center justify-center mx-auto mb-5 transition-colors">
-                  <Icon className="w-7 h-7 text-chili-600" />
-                </div>
-                <h3 className="font-heading font-semibold text-lg text-masala-900 mb-3">{title}</h3>
-                <p className="text-masala-600 text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
+      {/* ── Features ── */}
+      <Features />
+
+      {/* ── Our Story ── */}
+      <AboutSection />
+
 
     </div>
   )

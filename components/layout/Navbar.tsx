@@ -33,9 +33,8 @@ function NavbarAuthFallback() {
 }
 
 /**
- * Navbar — glass background uses the exact same Tailwind classes
- * as the Hero "WhatsApp Us" button:
- *   bg-white/6  ·  backdrop-blur-xl  ·  border-white/15
+ * Navbar starts transparent so it can sit directly over the home hero.
+ * Once scrolled, globals.css adds a light glass background for readability.
  *
  * Text/icon colors are managed by NavbarClient (white over hero,
  * dark brand colors after scrolling past it).
@@ -47,7 +46,7 @@ export function Navbar() {
   return (
     <header
       id="site-header"
-      className="sticky top-0 z-50 rounded-b-2xl backdrop-blur-xl border-b border-white/15 shadow-[0_4px_30px_rgba(0,0,0,0.08)]"
+      className="fixed top-0 left-0 right-0 z-50 rounded-b-2xl bg-transparent border-b border-transparent"
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative">
         {/*

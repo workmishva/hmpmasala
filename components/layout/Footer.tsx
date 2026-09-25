@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { MapPin, Phone, Mail, MessageCircle } from 'lucide-react'
-import { getSettings } from '@/lib/getSettings'
+import { getSettings } from '@/lib/settings'
 
 function FacebookIcon() {
   return (
